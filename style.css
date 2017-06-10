@@ -1,0 +1,102 @@
+.container {
+  height: 500px;
+  width: 800px;
+  overflow: hidden;
+  background-image: url("img/area1.png");
+  background-position: 0px -330px;
+  background-size: 4000px;
+  margin: 0 auto;
+  position: relative;
+  -webkit-transition: all 1000s ease-in-out;
+  -moz-transition: all 1000s ease-in-out;
+  -o-transition: all 1000s ease-in-out;
+  transition: all 1000ms ease-in-out;
+}
+.topScene {
+  width: 100%;
+  height: 400px;
+}
+.cell {
+  float:left;
+  width: 20px;
+  height: 20px;
+}
+.player {
+  background-position: 0px 0px;
+  position: absolute;
+  z-index: 9;
+  width: 60px;
+  height:140px;
+  z-index: 99;
+
+}
+.enemy {
+  background-position: -15px -15px;
+  position: absolute;
+  z-index: 9;
+  width: 60px;
+  height:160px;
+
+}
+.invert {
+  -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;
+    -ms-filter: "FlipH";
+}
+.lifesPlayer {
+  position: absolute;
+  left: 20%;
+  bottom: 10px;
+  color: #a7f8fa;
+  font-size: 34px;
+
+  font-family:"Futura",sans-serif;
+  text-shadow: 1px 4px 0px #307c90;
+  z-index: 999999;
+
+}
+.lifesPlayer span {
+  margin-left: 10px;
+}
+.lifeBarPlayer {
+  position: absolute;
+  left: 27%;
+  bottom: 15px;
+
+}
+.lifeBarPlayer span {
+  border: 3px solid #fff;
+  width: 20px;
+  display: inline-block;
+  height: 20px;
+}
+.lifeBarfull {
+  background-color: #0000ff;
+}
+@-webkit-keyframes walkPlayer1 {
+  0%   { background-position: 0px 0px;}
+  25% { background-position: -60px 0px;}
+  50% { background-position: -120px 0px; }
+  100 { background-position: 0px 0px; }
+}
+@-moz-keyframes walkPlayer1 {
+  0%   { background-position: 0px 0px;}
+  25% { background-position: -60px 0px;}
+  50% { background-position: -120px 0px; }
+  100 { background-position: 0px 0px; }
+}
+@-o-keyframes walkPlayer1 {
+  0%   { background-position: 0px 0px;}
+  25% { background-position: -60px 0px;}
+  50% { background-position: -120px 0px; }
+  100 { background-position: 0px 0px; }
+}
+@keyframes walkPlayer1 {
+  0%   { background-position: 0px 0px;}
+  25% { background-position: -60px 0px;}
+  50% { background-position: -120px 0px; }
+  100 { background-position: 0px 0px; }
+}

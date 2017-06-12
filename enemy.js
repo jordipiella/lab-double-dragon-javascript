@@ -1,20 +1,34 @@
-function Enemy(sprite) {
+function Enemy(name, sprite) {
+  this.name= "." + name;
+  this.nameSimple = name;
   this.sprite = sprite;
+
   this.position = {
     row: 3,
-    col: 30
+    col: 37
   };
   this.step = 0;
   this.timeAttack = true;
   this.lifes = 1;
-  this.lifeBar = 3;
+  this.lifeBar = 6;
   this.direction = "left";
 
   $('.topScene').append($('<div>')
-    .addClass('enemy')
-    .addClass('invert')
+    .addClass(this.nameSimple)
+    .addClass('invert enemies')
     .attr('data-player', 3)
-    .css({"background-image": "url(" + sprite + ")", "bottom": this.position.row * 20, "left": this.position.col * 20})
+    .css({
+      "background-image": "url(" + sprite + ")",
+      "bottom": this.position.row * 20,
+      "left": this.position.col * 20,
+      "background-position": "-15px -15px",
+      "position": "absolute",
+      "z-index": "9",
+      "width": "60px",
+      "height":"160px"
+
+
+    })
 
   );
 
@@ -54,8 +68,8 @@ function Enemy(sprite) {
 
         if( this.position.col < 39 && this.timeAttack === true ) {
           this.direction = "left";
-          $(".enemy").addClass("invert");
-          $(".enemy").css({"bottom" : this.position.row * 20, "left": (this.position.col - 1) * 20});
+          $(this.name).addClass("invert");
+          $(this.name).css({"bottom" : this.position.row * 20, "left": (this.position.col - 1) * 20});
           this.actualPosition("left", 1);
         }
 
@@ -66,8 +80,8 @@ function Enemy(sprite) {
 
         if( this.position.col > 0 && this.timeAttack === true) {
           this.direction = "right";
-          $(".enemy").removeClass("invert");
-          $(".enemy").css({"bottom" : this.position.row * 20, "left": (this.position.col + 1) * 20});
+          $(this.name).removeClass("invert");
+          $(this.name).css({"bottom" : this.position.row * 20, "left": (this.position.col + 1) * 20});
           this.actualPosition("right", 1);
         }
   };
@@ -76,7 +90,7 @@ function Enemy(sprite) {
     this.walkPlayer("up");
     if( this.position.row <= 3 && this.timeAttack === true) {
 
-      $(".enemy").css({"bottom" : (this.position.row + 1) * 20, "left": this.position.col * 20});
+      $(this.name).css({"bottom" : (this.position.row + 1) * 20, "left": this.position.col * 20});
       this.actualPosition("up", 1);
     }
 
@@ -85,7 +99,7 @@ function Enemy(sprite) {
   this.moveDown = function () {
     this.walkPlayer();
     if( this.position.row >= 0 && this.timeAttack === true) {
-      $(".enemy").css({"bottom" : (this.position.row - 1) * 20, "left": this.position.col * 20});
+      $(this.name).css({"bottom" : (this.position.row - 1) * 20, "left": this.position.col * 20});
       this.actualPosition("down", 1);
     }
   };
@@ -96,32 +110,32 @@ function Enemy(sprite) {
       switch (direction) {
         case 'up' :
             if(this.step === 0 && this.timeAttack === true) {
-              $(".enemy").css({ "background-position": "-330px -15px" });
+              $(this.name).css({ "background-position": "-330px -15px" });
             }
             if(this.step === 1 && this.timeAttack === true) {
-              $(".enemy").css({ "background-position": "-415px -15px" });
+              $(this.name).css({ "background-position": "-415px -15px" });
             }
             if(this.step === 2 && this.timeAttack === true){
-            $(".enemy").css({ "background-position": "-495px -15px" });
+            $(this.name).css({ "background-position": "-495px -15px" });
             }
             if(this.step >= 3 && this.timeAttack === true){
-              $(".enemy").css({ "background-position": "-575px -15px" });
+              $(this.name).css({ "background-position": "-575px -15px" });
               this.step = 0;
             }
             break;
         default:
 
             if(this.step === 0 && this.timeAttack === true) {
-              $(".enemy").css({ "background-position": "-75px -15px" });
+              $(this.name).css({ "background-position": "-75px -15px" });
             }
             if(this.step === 1 && this.timeAttack === true) {
-              $(".enemy").css({ "background-position": "-95px -15px" });
+              $(this.name).css({ "background-position": "-95px -15px" });
             }
             if(this.step === 2 && this.timeAttack === true){
-            $(".enemy").css({ "background-position": "-175px -15px" });
+            $(this.name).css({ "background-position": "-175px -15px" });
             }
             if(this.step >= 3 && this.timeAttack === true){
-              $(".enemy").css({ "background-position": "-255px -15px" });
+              $(this.name).css({ "background-position": "-255px -15px" });
               this.step = 0;
             }
 
@@ -137,16 +151,16 @@ function Enemy(sprite) {
 
         self.timeAttack = false;
         setTimeout(function(){
-          $(".enemy").css({ "background-position": "-15px -195px" });
+          $(self.name).css({ "background-position": "-15px -195px", "z-index":"99" });
         }, 100);
         setTimeout(function(){
-          $(".enemy").css({ "background-position": "-85px -195px", "width" : "130px", "left": (self.position.col * 20) - 30});
+          $(self.name).css({ "background-position": "-85px -195px", "width" : "130px", "left": (self.position.col * 20) - 30});
         }, 200);
         setTimeout(function(){
-          $(".enemy").css({ "background-position": "-245px -195px", "width" : "60px", "left": (self.position.col * 20) + 30});
+          $(self.name).css({ "background-position": "-245px -195px", "width" : "60px", "left": (self.position.col * 20) + 30});
         }, 300);
         setTimeout(function(){
-          $(".enemy").css({ "background-position": "-15px -195px" });
+          $(self.name).css({ "background-position": "-15px -195px", "z-index" : "9" });
           self.step += 1;
           self.timeAttack = true;
         }, 400);
@@ -157,14 +171,14 @@ function Enemy(sprite) {
           //console.log(this.position.col);
         self.timeAttack = false;
         setTimeout(function(){
-          $(".enemy").css({ "background-position": "-315px -195px" });
+          $(self.name).css({ "background-position": "-315px -195px" });
         }, 150);
         setTimeout(function(){
-          $(".enemy").css({ "background-position": "-385px -195px", "width": "130px", "left": (self.position.col * 20) - 30 });
+          $(self.name).css({ "background-position": "-385px -195px", "width": "130px", "left": (self.position.col * 20) - 30 });
         }, 350);
 
         setTimeout(function(){
-          $(".enemy").css({ "background-position": "-530px -195px", "width": "60px", "left": (self.position.col * 20) + 30 });
+          $(self.name).css({ "background-position": "-530px -195px", "width": "60px", "left": (self.position.col * 20) + 30 });
           self.step = 0;
           self.timeAttack = true;
         }, 500);
@@ -179,17 +193,21 @@ function Enemy(sprite) {
     this.timeAttack = false;
     var self = this;
     setTimeout(function(){
-      $(".enemy").css({ "background-position": "-15px -965px"});
+      $(self.name).css({ "background-position": "-15px -965px"});
     }, 300);
     setTimeout(function(){
-      $(".enemy").css({ "background-position": "-95px -965px" });
+      $(self.name).css({ "background-position": "-95px -965px" });
       self.timeAttack = true;
     }, 400);
 
 
   };
   this.removePlayer = function () {
-    $(".enemy").remove();
+    $(this.name).remove();
+    this.position = {
+      row: -100,
+      col: -100
+    };
   };
   this.deadPlayer = function () {
 
@@ -197,17 +215,18 @@ function Enemy(sprite) {
 
     var self = this;
     setTimeout(function(){
-      $(".enemy").css({ "background-position": "-165px -965px", "width" : "140px", "opacity" : "1" });
+      $(self.name).css({ "background-position": "-165px -965px", "width" : "140px", "opacity" : "1" });
     }, 300);
     setTimeout(function(){
-      $(".enemy").css({ "background-position": "-455px -965px", "opacity" : "0.5" });
+      $(self.name).css({ "background-position": "-455px -965px", "opacity" : "0.5" });
     }, 500);
     setTimeout(function(){
-      $(".enemy").css({ "opacity" : "0.7" });
+      $(self.name).css({ "opacity" : "0.7" });
     }, 800);
     setTimeout(function(){
-      $(".enemy").css({ "opacity" : "0" });
+      $(self.name).css({ "opacity" : "0" });
       self.timeAttack = true;
+
 
       //self.removePlayer();
     }, 1000);

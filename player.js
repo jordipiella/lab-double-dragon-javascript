@@ -1,4 +1,6 @@
-function Player (sprite) {
+function Player (name, sprite) {
+  this.name= "." + name;
+  this.nameSimple = name;
   this.sprite = sprite;
   this.position = {
     row: 3,
@@ -11,9 +13,20 @@ function Player (sprite) {
   this.direction = "right";
 
   $('.topScene').append($('<div>')
-    .addClass('player')
+    .addClass(this.nameSimple)
     .attr('data-player', 1)
-    .css({"background-image": "url(" + sprite + ")", "bottom": this.position.row * 20, "left": this.position.col * 20})
+    .css({
+      "background-image": "url(" + sprite + ")",
+      "bottom": this.position.row * 20,
+      "left": this.position.col * 20,
+        "background-position": "0px 0px",
+        "position": "absolute",
+        "width": "60px",
+        "height":"140px",
+        "z-index": "99"
+
+
+    })
 
   );
 
@@ -52,8 +65,8 @@ function Player (sprite) {
         if( this.position.col < 39 && this.timeAttack === true ) {
           this.direction = "right";
           //console.log(this.direction);
-          $(".player").removeClass("invert");
-          $(".player").css({"bottom" : this.position.row * 20, "left": (this.position.col + 1) * 20});
+          $(this.name).removeClass("invert");
+          $(this.name).css({"bottom" : this.position.row * 20, "left": (this.position.col + 1) * 20});
           this.actualPosition("right", 1);
         }
 
@@ -65,8 +78,8 @@ function Player (sprite) {
         if( this.position.col > 0 && this.timeAttack === true) {
           this.direction = "left";
           //console.log(this.direction);
-          $(".player").addClass("invert");
-          $(".player").css({"bottom" : this.position.row * 20, "left": (this.position.col - 1) * 20});
+          $(this.name).addClass("invert");
+          $(this.name).css({"bottom" : this.position.row * 20, "left": (this.position.col - 1) * 20});
           this.actualPosition("left", 1);
         }
 
@@ -78,7 +91,7 @@ function Player (sprite) {
     this.walkPlayer("up");
     if( this.position.row <= 3 && this.timeAttack === true) {
 
-      $(".player").css({"bottom" : (this.position.row + 1) * 20, "left": this.position.col * 20});
+      $(this.name).css({"bottom" : (this.position.row + 1) * 20, "left": this.position.col * 20});
       this.actualPosition("up", 1);
     }
 
@@ -86,7 +99,7 @@ function Player (sprite) {
   this.moveDown = function () {
     this.walkPlayer();
     if( this.position.row >= 0 && this.timeAttack === true) {
-      $(".player").css({"bottom" : (this.position.row - 1) * 20, "left": this.position.col * 20});
+      $(this.name).css({"bottom" : (this.position.row - 1) * 20, "left": this.position.col * 20});
       this.actualPosition("down", 1);
   }
   };
@@ -97,32 +110,32 @@ function Player (sprite) {
       switch (direction) {
         case 'up' :
             if(this.step === 0 && this.timeAttack === true) {
-              $(".player").css({ "background-position": "-0px -540px" });
+              $(this.name).css({ "background-position": "-0px -540px" });
             }
             if(this.step === 1 && this.timeAttack === true) {
-              $(".player").css({ "background-position": "-60px -540px" });
+              $(this.name).css({ "background-position": "-60px -540px" });
             }
             if(this.step === 2 && this.timeAttack === true){
-            $(".player").css({ "background-position": "-130px -540px" });
+            $(this.name).css({ "background-position": "-130px -540px" });
             }
             if(this.step >= 3 && this.timeAttack === true){
-              $(".player").css({ "background-position": "-185px -540px" });
+              $(this.name).css({ "background-position": "-185px -540px" });
               this.step = 0;
             }
             break;
         default:
 
             if(this.step === 0 && this.timeAttack === true) {
-              $(".player").css({ "background-position": "-60px 0px" });
+              $(this.name).css({ "background-position": "-60px 0px" });
             }
             if(this.step === 1 && this.timeAttack === true) {
-              $(".player").css({ "background-position": "-60px 0px" });
+              $(this.name).css({ "background-position": "-60px 0px" });
             }
             if(this.step === 2 && this.timeAttack === true){
-            $(".player").css({ "background-position": "-120px 0px" });
+            $(this.name).css({ "background-position": "-120px 0px" });
             }
             if(this.step >= 3 && this.timeAttack === true){
-              $(".player").css({ "background-position": "-180px 0px" });
+              $(this.name).css({ "background-position": "-180px 0px" });
               this.step = 0;
             }
 
@@ -131,26 +144,25 @@ function Player (sprite) {
   };
 
   this.attackPlayer = function () {
-
       var self = this;
 
       if(this.step % 2 != 1 && this.timeAttack === true ) {
 
         this.timeAttack = false;
         setTimeout(function(){
-          $(".player").css({ "background-position": "0px -135px" });
+          $(self.name).css({ "background-position": "0px -135px" });
         }, 100);
         setTimeout(function(){
-          $(".player").css({ "background-position": "-60px -135px", "width" : "85px"});
+          $(self.name).css({ "background-position": "-60px -135px", "width" : "85px"});
         }, 200);
         setTimeout(function(){
-          $(".player").css({ "background-position": "-140px -135px"});
+          $(self.name).css({ "background-position": "-140px -135px"});
         }, 300);
         setTimeout(function(){
-          $(".player").css({ "background-position": "-230px -135px" });
+          $(self.name).css({ "background-position": "-230px -135px" });
         }, 400);
         setTimeout(function(){
-          $(".player").css({ "background-position": "0px -135px", "width" : "60px" });
+          $(self.name).css({ "background-position": "0px -135px", "width" : "60px" });
 
           self.step += 1;
           self.timeAttack = true;
@@ -162,17 +174,17 @@ function Player (sprite) {
 
         this.timeAttack = false;
         setTimeout(function(){
-          $(".player").css({ "background-position": "-400px -135px" });
+          $(self.name).css({ "background-position": "-400px -135px" });
         }, 150);
         setTimeout(function(){
-          $(".player").css({ "background-position": "-470px -135px", "width": "90px" });
+          $(self.name).css({ "background-position": "-470px -135px", "width": "90px" });
         }, 350);
 
         setTimeout(function(){
-          $(".player").css({ "background-position": "-570px -135px", "width": "60px" });
+          $(self.name).css({ "background-position": "-570px -135px", "width": "60px" });
         }, 500);
         setTimeout(function(){
-          $(".player").css({ "background-position": "0 -135px" });
+          $(self.name).css({ "background-position": "0 -135px" });
           self.step = 0;
           self.timeAttack = true;
 
@@ -189,13 +201,13 @@ function Player (sprite) {
     this.timeAttack = false;
     var self = this;
     setTimeout(function(){
-      $(".player").css({ "background-position": "-240px -540px", "width" : "60px", "height":"140px" });
+      $(self.name).css({ "background-position": "-240px -540px", "width" : "60px", "height":"140px" });
     }, 300);
     setTimeout(function(){
-      $(".player").css({ "background-position": "-302px -540px" });
+      $(self.name).css({ "background-position": "-302px -540px" });
     }, 400);
     setTimeout(function(){
-      $(".player").css({ "background-position" : "0px -135px" });
+      $(self.name).css({ "background-position" : "0px -135px" });
       self.timeAttack = true;
     }, 600);
 
@@ -208,19 +220,19 @@ function Player (sprite) {
 
     var self = this;
     setTimeout(function(){
-      $(".player").css({ "background-position": "-360px -530px", "width" : "100px", "height":"70px", "opacity" : "1" });
+      $(self.name).css({ "background-position": "-360px -530px", "width" : "100px", "height":"70px", "opacity" : "1" });
+    }, 200);
+    setTimeout(function(){
+      $(self.name).css({ "background-position": "-360px -605px", "opacity" : "0.5" });
     }, 300);
     setTimeout(function(){
-      $(".player").css({ "background-position": "-360px -605px", "opacity" : "0.5" });
-    }, 500);
+      $(self.name).css({ "opacity" : "0.7" });
+    }, 400);
     setTimeout(function(){
-      $(".player").css({ "opacity" : "0.7" });
-    }, 800);
-    setTimeout(function(){
-      $(".player").css({ "opacity" : "0" });
+      $(self.name).css({ "opacity" : "0" });
       self.timeAttack = true;
 
-    }, 1000);
+    }, 700);
 
   };
 
@@ -233,16 +245,16 @@ function Player (sprite) {
         };
         var self = this;
         setTimeout(function(){
-          $(".player").css({ "bottom" : self.position.row * 20 , "left": self.position.col * 20, "background-position": "0px 0px", "width" : "60px", "height":"140px", "opacity" : "0.2" });
+          $(self.name).css({ "bottom" : self.position.row * 20 , "left": self.position.col * 20, "background-position": "0px 0px", "width" : "60px", "height":"140px", "opacity" : "0.2" });
         }, 300);
         setTimeout(function(){
-          $(".player").css({ "opacity" : "0.7" });
+          $(self.name).css({ "opacity" : "0.7" });
         }, 600);
         setTimeout(function(){
-          $(".player").css({ "opacity" : "0.2" });
+          $(self.name).css({ "opacity" : "0.2" });
         }, 900);
         setTimeout(function(){
-          $(".player").css({ "opacity" : "1" });
+          $(self.name).css({ "opacity" : "1" });
           self.timeAttack = true;
           self.lifeBar = 5;
         }, 1200);

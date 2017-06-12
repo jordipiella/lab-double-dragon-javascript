@@ -1,9 +1,16 @@
 function Game(options) {
   this.player = options.player;
   this.map = options.map;
-  this.enemy = options.enemy;
-  this.stepMap = 0;
+  this.enemies = options.enemies;
+  this.enemy = new Enemy(this.enemies[0], this.enemies[1]);
 
+  this.stepMap = 0;
+  this.drawScene = function () {
+    $('body').append('<div class="container"><div class="topScene"></div></div>');
+
+
+  };
+//this.drawScene ();
   this.assignControlsToKeys = function(){
       $('body').on('keydown', function(e) {
 
@@ -53,10 +60,13 @@ function Game(options) {
           break;
         case 80: //p
 
-          this.player.attackPlayer();
-          if(this.player.position.col === this.enemy.position.col + 1 && this.player.position.row === this.enemy.position.row || this.player.position.col === this.enemy.position.col - 1 && this.player.position.row === this.enemy.position.row) {
+
+          if(this.player.position.col === this.enemy.position.col + 1 && this.player.position.row === this.enemy.position.row && this.player.timeAttack === true && this.player.lifeBar !== 0 || this.player.position.col === this.enemy.position.col - 1 && this.player.position.row === this.enemy.position.row && this.player.timeAttack === true && this.player.lifeBar !== 0) {
+              this.player.attackPlayer();
               this.playerAttackToEnemy();
               this.enemy.punchToPlayer();
+            } else {
+              this.player.attackPlayer();
             }
           break;
         case 79: //o
@@ -67,37 +77,57 @@ function Game(options) {
       }
     }.bind(this));
   };
+  this.generateEnemies = function () {
+    var self = this;
+    setTimeout(function () {
 
+      self.enemy = new Enemy(self.enemies[2],self.enemies[3]) ;
+
+    }, 3000);
+
+  };
+  this.checkEnemiesExist = function () {
+    if($(this.enemy.name).hasClass("enemies")) {
+      return true;
+    }
+    return false;
+  };
   this.moveMap = function () {
 
 
-    if (this.player.position.col >= 37) {
+    if (this.player.position.col >= 37 && this.checkEnemiesExist() === false) {
       this.player.timeAttack = false;
       var returnMove = 25;
       if (this.stepMap === 0 ) {
-        $(".player").animate({ "left": (this.player.position.col-returnMove) * 20 }, 950);
+        $(this.player.name).animate({ "left": (this.player.position.col-returnMove) * 20 }, 950);
         $(".container").css({ "background-position": "-500px -330px" });
+        this.generateEnemies();
       }
       if (this.stepMap === 1 ) {
-        $(".player").animate({ "left": (this.player.position.col-returnMove) * 20 }, 950);
+        $(this.player.name).animate({ "left": (this.player.position.col-returnMove) * 20 }, 950);
         $(".container").css({ "background-position": "-1000px -330px" });
+        this.generateEnemies();
       }
       if (this.stepMap === 2 ) {
-        $(".player").animate({ "left": (this.player.position.col-returnMove) * 20 }, 950);
+        $(this.player.name).animate({ "left": (this.player.position.col-returnMove) * 20 }, 950);
         $(".container").css({ "background-position": "-1500px -330px" });
+        this.generateEnemies();
       }
       if (this.stepMap === 3 ) {
-        $(".player").animate({ "left": (this.player.position.col-returnMove) * 20 }, 950);
+        $(this.player.name).animate({ "left": (this.player.position.col-returnMove) * 20 }, 950);
         $(".container").css({ "background-position": "-2000px -330px" });
+        this.generateEnemies();
       }
       if (this.stepMap === 4  ) {
-        $(".player").animate({ "left": (this.player.position.col-returnMove) * 20 }, 950);
+        $(this.player.name).animate({ "left": (this.player.position.col-returnMove) * 20 }, 950);
         $(".container").css({ "background-position": "-2500px -330px" });
+        this.generateEnemies();
       }
 
       if (this.stepMap === 5 ) {
-        $(".player").animate({ "left": (this.player.position.col-returnMove) * 20 }, 950);
+        $(this.player.name).animate({ "left": (this.player.position.col-returnMove) * 20 }, 950);
         $(".container").css({ "background-position": "-3000px -330px" });
+        this.generateEnemies();
          clearInterval(moveMapInterval);
       }
 
@@ -118,7 +148,21 @@ function Game(options) {
   this.gameOver = function() {
 
 
-      console.log("Game Over");
+      //delete this.map;
+      $(".gameOver").css({"height":"100vh"});
+      $(".gameOver").animate({opacity: 1}, 2000);
+      $(".topScene div").remove();
+      clearInterval(actionIa);
+      setTimeout(function() {
+
+        $(".gameOver").animate({opacity: 0}, 2000);
+        $(".gameOver").animate({height: 0}, 2000);
+        $(".container").removeClass("visible");
+        $(".intro").removeClass("hide");
+
+      }, 4000);
+
+
 
 
   };
@@ -128,19 +172,21 @@ function Game(options) {
     }
   };*/
   this.playerAttackToEnemy = function() {
+      this.enemy.timeAttack = false;
       this.enemy.lifeBar -= 1;
+
       //console.log(this.enemy.lifeBar);
       if(this.enemy.lifeBar <= 0) {
         this.enemy.deadPlayer();
+        this.enemy.removePlayer();
+        this.enemy.timeAttack = true;
 
-        this.enemy.position = {
-          row: -1,
-          col: -1
-        };
+
       }
   };
 
   this.enemyAttackToPlayer = function() {
+      this.enemy.timeAttack = false;
       this.player.lifeBar -= 1;
       this.liveBarUpdateDraw();
       var self = this;
@@ -153,19 +199,30 @@ function Game(options) {
         setTimeout(function(){
           self.player.revivePlayer();
           $(".lifeBarPlayer span").addClass("lifeBarfull");
+          this.enemy.timeAttack = true;
         }, 2000);
 
       }
       if(this.player.lifes === 0 ) {
         this.player.deadPlayer();
-
+        this.enemy.timeAttack = true;
         setTimeout(function(){
           self.gameOver();
+
         }, 2000);
 
       }
 
   };
+  this.randomTimeAttack = function (number) {
+    this.enemy.timeAttack = false;
+    var randomNumber = Math.floor((Math.random() * number) + 1);
+    if(randomNumber === 1) {
+      this.enemy.timeAttack = true;
+    }
+    //console.log(randomNumber);
+  };
+
   this.iaEnemy = function () {
     var self = this;
 
@@ -186,7 +243,8 @@ function Game(options) {
           self.enemy.moveDown();
           //console.log(this.player.position, this.enemy.position);
       }
-      if(self.player.position.col + 1 === self.enemy.position.col && self.player.position.row == self.enemy.position.row && this.player.lifeBar > 0 || self.player.position.col - 1 == self.enemy.position.col && self.player.position.row == self.enemy.position.row && this.player.lifeBar > 0) {
+      this.randomTimeAttack(2);
+      if(self.player.position.col + 1 === self.enemy.position.col && self.player.position.row == self.enemy.position.row && this.player.lifeBar > 0 && this.enemy.timeAttack === true  || self.player.position.col - 1 == self.enemy.position.col && self.player.position.row == self.enemy.position.row && this.player.lifeBar > 0 && this.enemy.timeAttack === true) {
 
             this.enemy.attackPlayer();
             this.enemyAttackToPlayer();
@@ -224,6 +282,7 @@ function Game(options) {
     $(".lifeBarPlayer span:nth-child(" + (this.player.lifeBar + 1) + ")").toggleClass("lifeBarfull");
   };
 
+
   this.liveBarDraw();
   this.lifesCounterDraw();
   this.assignControlsToKeys();
@@ -231,9 +290,5 @@ function Game(options) {
 
 }
 //var player1 = new Player("img/DDG_BillyLee.gif");
-var newGame = new Game({
-  player : new Player("img/DDG_BillyLee.gif"),
-  map : new Map(),
-  enemy : new Enemy("img/Abobo.png")
-});
+var newGame;
 //console.log(newGame);

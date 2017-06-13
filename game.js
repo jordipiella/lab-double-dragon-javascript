@@ -10,14 +10,17 @@ function Game(options) {
 
 
   };
+  $(".container").css({ "background-position": "0px -330px" });
 //this.drawScene ();
   this.assignControlsToKeys = function(){
       $('body').on('keydown', function(e) {
 
       switch (e.keyCode) {
         case 87: // arrow up
-            if(this.player.position.col === this.enemy.position.col && this.player.position.row === this.enemy.position.row-0) {
-
+            if(this.checkEnemiesExist() && this.checkLivePlayer() &&
+              this.enemy.position !== null &&
+              (this.player.position.col === this.enemy.position.col
+                && this.player.position.row === this.enemy.position.row - 1)) {
                 //console.log(this.player.position, this.enemy.position);
               } else {
                 this.player.moveUp();
@@ -27,8 +30,10 @@ function Game(options) {
           break;
         case 83: // arrow down
 
-          if(this.player.position.col === this.enemy.position.col && this.player.position.row === this.enemy.position.row +1) {
-
+          if(this.checkEnemiesExist() && this.checkLivePlayer() &&
+          this.enemy.position !== null &&
+            (this.player.position.col === this.enemy.position.col
+              && this.player.position.row === this.enemy.position.row + 1)) {
             //console.log(this.player.position, this.enemy.position);
 
           } else {
@@ -37,8 +42,10 @@ function Game(options) {
           break;
         case 65: // arrow left
 
-          if(this.player.position.col === this.enemy.position.col + 1 && this.player.position.row === this.enemy.position.row) {
-
+          if(this.checkEnemiesExist() && this.checkLivePlayer() &&
+          this.enemy.position !== null &&
+          (this.player.position.col === this.enemy.position.col + 1
+            && this.player.position.row === this.enemy.position.row)) {
             //console.log(this.player.position, this.enemy.position);
 
           } else {
@@ -47,12 +54,11 @@ function Game(options) {
           break;
         case 68: // arrow right
 
-          if(this.player.position.col === this.enemy.position.col - 1 && this.player.position.row === this.enemy.position.row) {
-
-
-
-            //console.log(this.player.position, this.enemy.position);
-
+          if(this.checkEnemiesExist() && this.checkLivePlayer() &&
+          this.enemy.position !== null &&
+          (this.player.position.col === this.enemy.position.col - 1
+            && this.player.position.row === this.enemy.position.row)) {
+              //console.log(this.player.position, this.enemy.position);
 
           } else {
             this.player.moveForward();
@@ -61,10 +67,16 @@ function Game(options) {
         case 80: //p
 
 
-          if(this.player.position.col === this.enemy.position.col + 1 && this.player.position.row === this.enemy.position.row && this.player.timeAttack === true && this.player.lifeBar !== 0 || this.player.position.col === this.enemy.position.col - 1 && this.player.position.row === this.enemy.position.row && this.player.timeAttack === true && this.player.lifeBar !== 0) {
+          if(this.checkEnemiesExist() && this.checkLivePlayer() &&
+          this.enemy.position !== null &&
+            (this.player.position.col === this.enemy.position.col + 1 || this.player.position.col === this.enemy.position.col - 1
+            && this.player.position.row === this.enemy.position.row
+            && this.player.timeAttack === true
+            && this.enemy.timeAttack === true
+            && this.player.lifeBar !== 0)) {
               this.player.attackPlayer();
               this.playerAttackToEnemy();
-              this.enemy.punchToPlayer();
+
             } else {
               this.player.attackPlayer();
             }
@@ -77,17 +89,29 @@ function Game(options) {
       }
     }.bind(this));
   };
+
   this.generateEnemies = function () {
+
     var self = this;
     setTimeout(function () {
 
       self.enemy = new Enemy(self.enemies[2],self.enemies[3]) ;
+      self.enemy.drawEnemy();
+      actionIa = setInterval(function(){
+      self.iaEnemy();
+      }, 700);
 
     }, 3000);
 
   };
   this.checkEnemiesExist = function () {
-    if($(this.enemy.name).hasClass("enemies")) {
+    if(this.enemy !== null) {
+      return true;
+    }
+    return false;
+  };
+  this.checkLivePlayer = function () {
+    if(this.player.lifeBar > 0 && this.player.lifes > 0) {
       return true;
     }
     return false;
@@ -153,6 +177,10 @@ function Game(options) {
       $(".gameOver").animate({opacity: 1}, 2000);
       $(".topScene div").remove();
       clearInterval(actionIa);
+      clearInterval(moveMapInterval);
+      this.enemy.removePlayer();
+      this.enemy = null;
+      this.map = null;
       setTimeout(function() {
 
         $(".gameOver").animate({opacity: 0}, 2000);
@@ -166,20 +194,20 @@ function Game(options) {
 
 
   };
-  /*this.notSamePosition = function(actionFunction) {
-    if(this.player.position.col != this.enemy.position.col && this.player.position.row != this.enemy.position.row) {
-      return actionFunction;
-    }
-  };*/
+
   this.playerAttackToEnemy = function() {
       this.enemy.timeAttack = false;
+      this.player.timeAttack = false;
       this.enemy.lifeBar -= 1;
-
+      this.enemy.punchToPlayer();
       //console.log(this.enemy.lifeBar);
-      if(this.enemy.lifeBar <= 0) {
+      if(this.enemy.lifeBar === 0) {
+        clearInterval(actionIa);
         this.enemy.deadPlayer();
         this.enemy.removePlayer();
         this.enemy.timeAttack = true;
+        this.player.timeAttack = true;
+        this.enemy = null;
 
 
       }
@@ -187,25 +215,32 @@ function Game(options) {
 
   this.enemyAttackToPlayer = function() {
       this.enemy.timeAttack = false;
+      this.player.timeAttack = false;
       this.player.lifeBar -= 1;
+      this.enemy.attackPlayer();
       this.liveBarUpdateDraw();
       var self = this;
       console.log("lives",this.player.lifes);
       console.log("liveBar",this.player.lifeBar);
       if(this.player.lifeBar <= 0 && this.player.lifes > 0) {
 
-        this.player.deadPlayer();
-        this.lifesCounterUpdate();
+
+
+          this.player.deadPlayer();
+          this.lifesCounterUpdate();
+
         setTimeout(function(){
           self.player.revivePlayer();
           $(".lifeBarPlayer span").addClass("lifeBarfull");
           this.enemy.timeAttack = true;
-        }, 2000);
+          this.player.timeAttack = true;
+        }, 2500);
 
       }
       if(this.player.lifes === 0 ) {
         this.player.deadPlayer();
         this.enemy.timeAttack = true;
+        this.player.timeAttack = true;
         setTimeout(function(){
           self.gameOver();
 
@@ -225,39 +260,48 @@ function Game(options) {
 
   this.iaEnemy = function () {
     var self = this;
+      if(this.checkEnemiesExist()) {
+        this.randomTimeAttack(2);
+      }
 
-      if(self.player.position.col + 1 !== self.enemy.position.col && self.player.position.col < self.enemy.position.col ) {
+      if(this.checkEnemiesExist() &&
+        (self.player.position.col + 1 !== self.enemy.position.col
+          && self.player.position.col < self.enemy.position.col)) {
           self.enemy.moveForward();
           //console.log(this.player.position, this.enemy.position);
       }
-      if(self.player.position.col - 1 !== self.enemy.position.col && self.player.position.col > self.enemy.position.col) {
+      if(this.checkEnemiesExist() &&
+      (self.player.position.col - 1 !== self.enemy.position.col
+        && self.player.position.col > self.enemy.position.col)) {
           self.enemy.moveBack();
           //console.log(this.player.position, this.enemy.position);
       }
-      if(self.player.position.row !== self.enemy.position.row && self.player.position.row > self.enemy.position.row) {
+      if(this.checkEnemiesExist() &&
+        (self.player.position.row !== self.enemy.position.row && self.player.position.row > self.enemy.position.row)) {
           self.enemy.moveUp();
 
           //console.log(this.player.position, this.enemy.position);
       }
-      if(self.player.position.row !== self.enemy.position.row && self.player.position.row < self.enemy.position.row) {
+      if(this.checkEnemiesExist() &&
+      (self.player.position.row !== self.enemy.position.row && self.player.position.row < self.enemy.position.row)) {
           self.enemy.moveDown();
           //console.log(this.player.position, this.enemy.position);
       }
-      this.randomTimeAttack(2);
-      if(self.player.position.col + 1 === self.enemy.position.col && self.player.position.row == self.enemy.position.row && this.player.lifeBar > 0 && this.enemy.timeAttack === true  || self.player.position.col - 1 == self.enemy.position.col && self.player.position.row == self.enemy.position.row && this.player.lifeBar > 0 && this.enemy.timeAttack === true) {
 
-            this.enemy.attackPlayer();
+      if(this.checkEnemiesExist() &&
+      (self.player.position.col + 1 === self.enemy.position.col  || self.player.position.col - 1 == self.enemy.position.col)
+      && self.player.position.row == self.enemy.position.row
+      && this.player.lifeBar > 0
+      && this.enemy.timeAttack === true) {
+
             this.enemyAttackToPlayer();
             this.player.punchToPlayer();
-
       }
 
 
 
   };
-  var actionIa = setInterval(function(){
-  self.iaEnemy();
-  }, 700);
+
 
   this.lifesCounterDraw = function () {
 
@@ -282,10 +326,14 @@ function Game(options) {
     $(".lifeBarPlayer span:nth-child(" + (this.player.lifeBar + 1) + ")").toggleClass("lifeBarfull");
   };
 
+  this.loadGame = function () {
+    this.generateEnemies();
+    this.liveBarDraw();
+    this.lifesCounterDraw();
+    this.assignControlsToKeys();
+  };
+  this.loadGame();
 
-  this.liveBarDraw();
-  this.lifesCounterDraw();
-  this.assignControlsToKeys();
 
 
 }

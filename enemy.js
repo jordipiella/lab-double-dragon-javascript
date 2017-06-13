@@ -5,7 +5,7 @@ function Enemy(name, sprite) {
 
   this.position = {
     row: 3,
-    col: 37
+    col: 38
   };
   this.step = 0;
   this.timeAttack = true;
@@ -13,24 +13,28 @@ function Enemy(name, sprite) {
   this.lifeBar = 6;
   this.direction = "left";
 
-  $('.topScene').append($('<div>')
-    .addClass(this.nameSimple)
-    .addClass('invert enemies')
-    .attr('data-player', 3)
-    .css({
-      "background-image": "url(" + sprite + ")",
-      "bottom": this.position.row * 20,
-      "left": this.position.col * 20,
-      "background-position": "-15px -15px",
-      "position": "absolute",
-      "z-index": "9",
-      "width": "60px",
-      "height":"160px"
+  this.drawEnemy = function () {
+
+    $('.topScene').append($('<div>')
+      .addClass(this.nameSimple)
+      .addClass('invert enemies')
+      .attr('data-player', 3)
+      .css({
+        "background-image": "url(" + sprite + ")",
+        "bottom": this.position.row * 20,
+        "left": this.position.col * 20,
+        "background-position": "-15px -15px",
+        "position": "absolute",
+        "z-index": "9",
+        "width": "60px",
+        "height":"160px"
 
 
-    })
+      })
 
-  );
+    );
+  };
+
 
 
   this.actualPosition = function (direction, number) {
@@ -204,10 +208,7 @@ function Enemy(name, sprite) {
   };
   this.removePlayer = function () {
     $(this.name).remove();
-    this.position = {
-      row: -100,
-      col: -100
-    };
+
   };
   this.deadPlayer = function () {
 

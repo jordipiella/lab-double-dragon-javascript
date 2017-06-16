@@ -1,24 +1,27 @@
-function Player (name, sprite) {
+function Player (name, sprite, row, col) {
   this.name= "." + name;
   this.nameSimple = name;
   this.sprite = sprite;
+  this.timeAttackPlayer = true;
   this.position = {
-    row: 3,
-    col: 2
+    row: row,
+    col: col
   };
+
   this.step = 0;
-  this.timeAttack = true;
-  this.lifes = 2;
+
+  this.lifes = 1;
   this.lifeBar = 5;
   this.direction = "right";
 
+this.drawPlayer = function (numberPlayer) {
   $('.topScene').append($('<div>')
     .addClass(this.nameSimple)
-    .attr('data-player', 1)
+    .attr('data-player', numberPlayer)
     .css({
-      "background-image": "url(" + sprite + ")",
+      "background-image": "url(" + this.sprite + ")",
       "bottom": this.position.row * 20,
-      "left": this.position.col * 20,
+      "left": this.position.col * 2.56 + "%",
         "background-position": "0px 0px",
         "position": "absolute",
         "width": "60px",
@@ -29,6 +32,8 @@ function Player (name, sprite) {
     })
 
   );
+};
+
 
   this.actualPosition = function (direction, number) {
       switch(direction) {
@@ -62,11 +67,11 @@ function Player (name, sprite) {
   this.moveForward = function () {
         this.walkPlayer();
 
-        if( this.position.col < 39 && this.timeAttack === true ) {
+        if( this.position.col < 38) {
           this.direction = "right";
           //console.log(this.direction);
           $(this.name).removeClass("invert");
-          $(this.name).css({"bottom" : this.position.row * 20, "left": (this.position.col + 1) * 20});
+          $(this.name).css({"bottom" : this.position.row * 20, "left": (this.position.col + 1) *  2.56 +"%"});
           this.actualPosition("right", 1);
         }
 
@@ -75,11 +80,11 @@ function Player (name, sprite) {
   this.moveBack = function () {
         this.walkPlayer();
 
-        if( this.position.col > 0 && this.timeAttack === true) {
+        if( this.position.col > 0) {
           this.direction = "left";
           //console.log(this.direction);
           $(this.name).addClass("invert");
-          $(this.name).css({"bottom" : this.position.row * 20, "left": (this.position.col - 1) * 20});
+          $(this.name).css({"bottom" : this.position.row * 20, "left": (this.position.col - 1) * 2.56 +"%"});
           this.actualPosition("left", 1);
         }
 
@@ -89,17 +94,17 @@ function Player (name, sprite) {
 
   this.moveUp = function () {
     this.walkPlayer("up");
-    if( this.position.row <= 3 && this.timeAttack === true) {
+    if( this.position.row <= 3) {
 
-      $(this.name).css({"bottom" : (this.position.row + 1) * 20, "left": this.position.col * 20});
+      $(this.name).css({"bottom" : (this.position.row + 1) * 20, "left": this.position.col * 2.56 +"%"});
       this.actualPosition("up", 1);
     }
 
   };
   this.moveDown = function () {
     this.walkPlayer();
-    if( this.position.row >= 0 && this.timeAttack === true) {
-      $(this.name).css({"bottom" : (this.position.row - 1) * 20, "left": this.position.col * 20});
+    if( this.position.row >= 0) {
+      $(this.name).css({"bottom" : (this.position.row - 1) * 20, "left": this.position.col * 2.56 +"%"});
       this.actualPosition("down", 1);
   }
   };
@@ -109,32 +114,32 @@ function Player (name, sprite) {
 
       switch (direction) {
         case 'up' :
-            if(this.step === 0 && this.timeAttack === true) {
+            if(this.step === 0) {
               $(this.name).css({ "background-position": "-0px -540px" });
             }
-            if(this.step === 1 && this.timeAttack === true) {
+            if(this.step === 1) {
               $(this.name).css({ "background-position": "-60px -540px" });
             }
-            if(this.step === 2 && this.timeAttack === true){
+            if(this.step === 2){
             $(this.name).css({ "background-position": "-130px -540px" });
             }
-            if(this.step >= 3 && this.timeAttack === true){
+            if(this.step >= 3){
               $(this.name).css({ "background-position": "-185px -540px" });
               this.step = 0;
             }
             break;
         default:
 
-            if(this.step === 0 && this.timeAttack === true) {
+            if(this.step === 0) {
               $(this.name).css({ "background-position": "-60px 0px" });
             }
-            if(this.step === 1 && this.timeAttack === true) {
+            if(this.step === 1) {
               $(this.name).css({ "background-position": "-60px 0px" });
             }
-            if(this.step === 2 && this.timeAttack === true){
+            if(this.step === 2){
             $(this.name).css({ "background-position": "-120px 0px" });
             }
-            if(this.step >= 3 && this.timeAttack === true){
+            if(this.step >= 3){
               $(this.name).css({ "background-position": "-180px 0px" });
               this.step = 0;
             }
@@ -146,9 +151,9 @@ function Player (name, sprite) {
   this.attackPlayer = function () {
       var self = this;
 
-      if(this.step % 2 != 1 && this.timeAttack === true ) {
+      if(this.step % 2 != 1 ) {
 
-        this.timeAttack = false;
+
         setTimeout(function(){
           $(self.name).css({ "background-position": "0px -135px" });
         }, 100);
@@ -165,30 +170,28 @@ function Player (name, sprite) {
           $(self.name).css({ "background-position": "0px -135px", "width" : "60px" });
 
           self.step += 1;
-          self.timeAttack = true;
+
 
         }, 500);
 
       }
-      if(this.step % 2 == 1 && this.timeAttack === true ) {
+      if(this.step % 2 == 1 ) {
 
-        this.timeAttack = false;
+
         setTimeout(function(){
           $(self.name).css({ "background-position": "-400px -135px" });
         }, 150);
         setTimeout(function(){
           $(self.name).css({ "background-position": "-470px -135px", "width": "90px" });
-        }, 350);
+        }, 250);
 
         setTimeout(function(){
           $(self.name).css({ "background-position": "-570px -135px", "width": "60px" });
-        }, 500);
+        }, 350);
         setTimeout(function(){
           $(self.name).css({ "background-position": "0 -135px" });
           self.step = 0;
-          self.timeAttack = true;
-
-        }, 700);
+        }, 450);
 
 
       }
@@ -198,7 +201,7 @@ function Player (name, sprite) {
 
 
   this.punchToPlayer = function () {
-    this.timeAttack = false;
+
     var self = this;
     setTimeout(function(){
       $(self.name).css({ "background-position": "-240px -540px", "width" : "60px", "height":"140px" });
@@ -208,56 +211,58 @@ function Player (name, sprite) {
     }, 400);
     setTimeout(function(){
       $(self.name).css({ "background-position" : "0px -135px" });
-      self.timeAttack = true;
     }, 600);
 
   };
 
   this.deadPlayer = function () {
-    this.timeAttack = false;
+
     this.lifes -= 1;
 
 
     var self = this;
     setTimeout(function(){
+      if(self.direction === "right") {
+        $(self.name).addClass("invert");
+      }
+      if(self.direction === "left") {
+        $(self.name).removeClass("invert");
+      }
       $(self.name).css({ "background-position": "-360px -530px", "width" : "100px", "height":"70px", "opacity" : "1" });
-    }, 200);
+    }, 800);
     setTimeout(function(){
       $(self.name).css({ "background-position": "-360px -605px", "opacity" : "0.5" });
-    }, 300);
+    }, 1500);
     setTimeout(function(){
       $(self.name).css({ "opacity" : "0.7" });
-    }, 400);
+    }, 2500);
     setTimeout(function(){
       $(self.name).css({ "opacity" : "0" });
-      self.timeAttack = true;
-
-    }, 700);
+    }, 3500);
 
   };
 
   this.revivePlayer = function () {
 
-        this.timeAttack = false;
+
         this.position = {
           row: 3,
           col: 2
         };
         var self = this;
         setTimeout(function(){
-          $(self.name).css({ "bottom" : self.position.row * 20 , "left": self.position.col * 20, "background-position": "0px 0px", "width" : "60px", "height":"140px", "opacity" : "0.2" });
-        }, 300);
+          $(self.name).css({ "bottom" : self.position.row * 20 , "left": self.position.col * 2.56 +"%", "background-position": "0px 0px", "width" : "60px", "height":"140px", "opacity" : "0.2" });
+        }, 4000);
         setTimeout(function(){
           $(self.name).css({ "opacity" : "0.7" });
-        }, 600);
+        }, 4500);
         setTimeout(function(){
           $(self.name).css({ "opacity" : "0.2" });
-        }, 900);
+        }, 5000);
         setTimeout(function(){
           $(self.name).css({ "opacity" : "1" });
-          self.timeAttack = true;
           self.lifeBar = 5;
-        }, 1200);
+        }, 5500);
 
 
 

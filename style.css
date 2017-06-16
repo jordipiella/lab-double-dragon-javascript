@@ -5,18 +5,20 @@ body {
   text-align: center;
   background-image: url("img/doubledragon1-amstradvirgin.jpg");
   background-size: cover;
-  background-position: center;
+  background-position: top center;
 }
 .container {
 
   height: 500px;
-  width: 800px;
+  width: 100%;
+
   display: none;
   overflow: hidden;
-  background-image: url("img/area1.png");
+  background-image: url("img/Area13.png");
   background-position: 0px -330px;
-  background-size: 4000px;
-  margin: 50px auto;
+  background-size: 7795px;
+  background-repeat: no-repeat;
+  margin: 150px auto;
   position: relative;
   -webkit-transition: all 1000s ease-in-out;
   -moz-transition: all 1000s ease-in-out;
@@ -29,7 +31,7 @@ body {
 }
 .cell {
   float:left;
-  width: 20px;
+  width: 2.56%;
   height: 20px;
 }
 
@@ -57,6 +59,21 @@ body {
 .lifesPlayer span {
   margin-left: 10px;
 }
+.lifesPlayer2 {
+  position: absolute;
+  right: 20%;
+  bottom: 10px;
+  color: #a7f8fa;
+  font-size: 34px;
+
+
+  text-shadow: 1px 4px 0px #307c90;
+  z-index: 999999;
+
+}
+.lifesPlayer2 span {
+  margin-left: 10px;
+}
 .lifeBarPlayer {
   position: absolute;
   left: 27%;
@@ -72,6 +89,23 @@ body {
 }
 .lifeBarfull {
   background-color: #0000ff;
+}
+
+.lifeBarPlayer2 {
+  position: absolute;
+  right: 27%;
+  bottom: 15px;
+  z-index: 999999;
+
+}
+.lifeBarPlayer2 span {
+  border: 3px solid #fff;
+  width: 20px;
+  display: inline-block;
+  height: 20px;
+}
+.lifeBarfullred {
+  background-color: red;
 }
 .hide {
   display: none;
@@ -94,6 +128,22 @@ body {
   height: 40px;
   color: red;
   margin:0 auto;
+  font-size: 25px;
+  font-weight: bold;
+  text-transform: uppercase;
+  border:0px;
+  text-shadow: 1px 2px 0px #307c90;
+  box-shadow: 2px 3px 0px #307c90;
+  position: relative;
+  top: 40px;
+  cursor: pointer;
+}
+.start2 {
+  width: 200px;
+  background-color: #a7f8fa;
+  height: 40px;
+  color: red;
+  margin:0 20px;
   font-size: 25px;
   font-weight: bold;
   text-transform: uppercase;

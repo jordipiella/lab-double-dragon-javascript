@@ -10,7 +10,7 @@ function Player (name, sprite, row, col) {
 
   this.step = 0;
 
-  this.lifes = 1;
+  this.lifes = 2;
   this.lifeBar = 5;
   this.direction = "right";
 
@@ -26,7 +26,7 @@ this.drawPlayer = function (numberPlayer) {
         "position": "absolute",
         "width": "60px",
         "height":"140px",
-        "z-index": "99"
+        "z-index": "9"
 
 
     })

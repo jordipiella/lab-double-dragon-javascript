@@ -17,7 +17,7 @@ $(document).ready(function() {
         {
           name : "enemy12",
           sprite : "img/Abobo-w.png",
-          position: { row : 3, col : 38 }
+          position: { row : 1, col : 38 }
         }
       ]
     });
@@ -42,7 +42,7 @@ $(document).ready(function() {
         {
           name : "enemy12",
           sprite : "img/Abobo-w.png",
-          position: { row : 3, col : 38 }
+          position: { row : 1, col : 3 }
         }
       ]
     });

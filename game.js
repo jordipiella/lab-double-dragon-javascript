@@ -3,7 +3,8 @@ function Game(options) {
   this.player2 = options.player2;
   this.map = options.map;
   this.enemies = options.enemies;
-  this.enemy = "";
+  //this.enemy = "";
+  this.arrayEnemiesGenerated = [];
   this.iaDecision = true;
   this.timeAttack = true;
   this.stepMap = 0;
@@ -165,7 +166,7 @@ function Game(options) {
         && this.enemy.position !== null
         && (this.player2.position.col === this.enemy.position.col - 1
           && this.player2.position.row === this.enemy.position.row)) {
-            console.log(this.player.position, this.enemy.position);
+            //console.log(this.player.position, this.enemy.position);
 
         } else {
 
@@ -188,7 +189,7 @@ function Game(options) {
 
         }
           break;
-        case 17: //ctrl attack
+        case 189: //- ctrl attack 17
         if(this.checkTwoPlayers() && this.checkEnemiesExist()
         && this.checkLivePlayer(this.player2)
         && this.enemy.position !== null
@@ -218,14 +219,33 @@ function Game(options) {
       }
     }.bind(this));
   };
+  this.generateArrayEnemies = function (number) {
+    //var enemySelection = 1;
+    var j = 0;
+    for(i = 0; i < number; i++) {
+      //if(this.randomTimeAttack(2) === 2) {
+        //enemySelection = 0;
+      //}
+      if( j > 1 ) {
+        j=0;
+      }
+      this.enemy = new Enemy(this.enemies[j].name, this.enemies[j].sprite, this.enemies[j].position) ;
+      this.arrayEnemiesGenerated.push(this.enemy);
+      j++;
+      //console.log(this.arrayEnemiesGenerated);
+    }
+
+
+  };
+
+
 
   this.generateEnemies = function (timeToWait) {
 
     var self = this;
     setTimeout(function () {
-
-      self.enemy = new Enemy(self.enemies[0].name, self.enemies[0].sprite, self.enemies[0].position) ;
-      self.enemy.drawEnemy();
+      self.arrayEnemiesGenerated[0].drawEnemy();
+      self.arrayEnemiesGenerated[1].drawEnemy();
       actionIa = setInterval(function(){
       self.iaEnemy();
       }, 700);
@@ -234,7 +254,10 @@ function Game(options) {
 
   };
   this.checkEnemiesExist = function () {
-    if(this.enemy !== null) {
+    //if(this.arrayEnemiesGenerated !== null) {
+      //return true;
+    //}
+    if($(".container div").hasClass("enemies")) {
       return true;
     }
     return false;
@@ -367,7 +390,10 @@ function Game(options) {
       clearInterval(this.baseInterval);
       this.removePlayer(this.enemy.name);
       this.removePlayer(this.player.name);
-      this.removePlayer(this.player2.name);
+      if(this.checkTwoPlayers()) {
+        this.removePlayer(this.player2.name);
+      }
+
       this.enemy = null;
       this.map = null;
       this.player = null;
@@ -386,30 +412,32 @@ function Game(options) {
 
   };
 
-  this.playerAttackToEnemy = function(playerToAttack) {
+  this.playerAttackToEnemy = function(playerToAttack, enemykicked) {
       var self = this;
 
       playerToAttack.timeAttackPlayer = false;
-      this.enemy.lifeBar -= 1;
+      enemykicked.lifeBar -= 1;
       playerToAttack.attackPlayer();
-      this.enemy.punchToPlayer();
+      enemykicked.punchToPlayer();
 
       setTimeout(function(){
         playerToAttack.timeAttackPlayer = true;
 
       }, 700);
 
-      if(this.enemy.lifeBar === 0) {
+      if(enemykicked.lifeBar === 0) {
         setTimeout(function(){
           playerToAttack.timeAttackPlayer = false;
 
         }, 700);
 
         clearInterval(actionIa);
-        this.enemy.deadPlayer();
+        enemykicked.deadPlayer();
+
+
         setTimeout(function(){
-            self.removePlayer(self.enemy.name);
-            self.enemy = null;
+            self.removePlayer(enemykicked.name);
+            enemykicked = null;
             playerToAttack.timeAttackPlayer = true;
 
         }, 2700);
@@ -420,13 +448,13 @@ function Game(options) {
 
   };
 
-  this.enemyAttackToPlayer = function(playerKicked) {
+  this.enemyAttackToPlayer = function(playerKicked, enemyKicker) {
 
 
       playerKicked.timeAttackPlayer = false;
       playerKicked.lifeBar -= 1;
-      $(this.enemy.name).css({"z-index":"99"});
-      this.enemy.attackPlayer();
+      $(enemyKicker.name).css({"z-index":"99"});
+      enemyKicker.attackPlayer();
       playerKicked.punchToPlayer();
       this.liveBarUpdateDraw(playerKicked);
 
@@ -435,18 +463,19 @@ function Game(options) {
 
 
       setTimeout(function(){
-        $(self.enemy.name).css({"z-index":"9"});
+        $(enemyKicker.name).css({"z-index":"9"});
         playerKicked.timeAttackPlayer = true;
 
       }, 1000);
 
-      console.log(playerKicked.lifes);
+      //console.log(playerKicked.lifes);
       if(playerKicked.lifes >= 1 && playerKicked.lifeBar === 0) {
         setTimeout(function(){
           playerKicked.timeAttackPlayer = false;
         }, 1001);
 
           playerKicked.deadPlayer();
+
           this.lifesCounterUpdate(playerKicked);
 
           playerKicked.revivePlayer();
@@ -466,8 +495,6 @@ function Game(options) {
         }, 7500);
 
 
-
-
       }
       if(this.checkTwoPlayers() && this.player.lifes <= 0) {
         this.player.deadPlayer();
@@ -478,6 +505,11 @@ function Game(options) {
       }
       if(this.checkTwoPlayers() && this.player2.lifes <= 0) {
         this.player2.deadPlayer();
+        this.player2.position = {
+          row: -100,
+          col : -100
+        };
+
       }
 
       if(this.checkTwoPlayers() === false && this.player.lifes <= 0  || this.checkTwoPlayers() && this.player.lifes <= 0 && this.player2.lifes <= 0 ) {
@@ -505,60 +537,66 @@ function Game(options) {
     if(randomNumber === 1) {
       this.iaDecision = true;
     }
+    return randomNumber;
     //console.log(randomNumber);
   };
 
   this.iaEnemy = function () {
 
-      if(this.checkEnemiesExist()) {
-        this.randomTimeAttack(2);
-      }
+      for(n = 0; n< this.arrayEnemiesGenerated.length; n++){
+        if(this.checkEnemiesExist()) {
+          this.randomTimeAttack(4);
+        }
 
-      //select player
-      if(this.checkTwoPlayers() && this.enemy.position.col - this.player.position.col > this.enemy.position.col - this.player2.position.col) {
-        this.playerSelected = this.player2;
-      }
-      if(this.checkTwoPlayers() && this.enemy.position.col - this.player.position.col < this.enemy.position.col - this.player2.position.col) {
-        this.playerSelected = this.player;
-      }
+        //select player
+        if(this.checkTwoPlayers() && this.arrayEnemiesGenerated[n].position.col - this.player.position.col > this.arrayEnemiesGenerated[n].position.col - this.player2.position.col) {
+          this.playerSelected = this.player2;
+        }
+        if(this.checkTwoPlayers() && this.arrayEnemiesGenerated[n].position.col - this.player.position.col < this.arrayEnemiesGenerated[n].position.col - this.player2.position.col) {
+          this.playerSelected = this.player;
+        }
 
 
 
 
-      if(this.checkEnemiesExist() &&
-        (this.playerSelected.position.col + 1 !== this.enemy.position.col
-          && this.playerSelected.position.col < this.enemy.position.col)) {
-          this.enemy.moveForward();
-          //console.log(this.player.position, this.enemy.position);
-      }
-      if(this.checkEnemiesExist() &&
-      (this.playerSelected.position.col - 1 !== this.enemy.position.col
-        && this.playerSelected.position.col > this.enemy.position.col)) {
-          this.enemy.moveBack();
-          //console.log(this.player.position, this.enemy.position);
-      }
-      if(this.checkEnemiesExist() &&
-        (this.playerSelected.position.row !== this.enemy.position.row && this.playerSelected.position.row > this.enemy.position.row)) {
-          this.enemy.moveUp();
+        if(this.checkEnemiesExist() &&
+          (this.playerSelected.position.col + 1 !== this.arrayEnemiesGenerated[n].position.col
+            && this.playerSelected.position.col < this.arrayEnemiesGenerated[n].position.col)) {
+            this.arrayEnemiesGenerated[n].moveForward();
+            //console.log(this.player.position, this.enemy.position);
+        }
+        if(this.checkEnemiesExist() &&
+        (this.playerSelected.position.col - 1 !== this.arrayEnemiesGenerated[n].position.col
+          && this.playerSelected.position.col > this.arrayEnemiesGenerated[n].position.col)) {
+            this.arrayEnemiesGenerated[n].moveBack();
+            //console.log(this.player.position, this.enemy.position);
+        }
+        if(this.checkEnemiesExist() &&
+          (this.playerSelected.position.row !== this.arrayEnemiesGenerated[n].position.row && this.playerSelected.position.row > this.arrayEnemiesGenerated[n].position.row)) {
+            this.arrayEnemiesGenerated[n].moveUp();
 
-          //console.log(this.player.position, this.enemy.position);
-      }
-      if(this.checkEnemiesExist() &&
-      (this.playerSelected.position.row !== this.enemy.position.row && this.playerSelected.position.row < this.enemy.position.row)) {
-          this.enemy.moveDown();
-          //console.log(this.player.position, this.enemy.position);
-      }
+            //console.log(this.player.position, this.enemy.position);
+        }
+        if(this.checkEnemiesExist() &&
+        (this.playerSelected.position.row !== this.arrayEnemiesGenerated[n].position.row && this.playerSelected.position.row < this.arrayEnemiesGenerated[n].position.row)) {
+            this.arrayEnemiesGenerated[n].moveDown();
+            //console.log(this.player.position, this.enemy.position);
+        }
 
-      if(this.checkEnemiesExist()
-      && this.playerSelected.timeAttackPlayer === true
-      && (this.playerSelected.position.col + 1 === this.enemy.position.col  || this.playerSelected.position.col - 1 == this.enemy.position.col)
-      && this.playerSelected.position.row == this.enemy.position.row
-      && this.playerSelected.lifeBar > 0
-      && this.iaDecision === true) {
+        if(this.checkEnemiesExist()
+        && this.playerSelected.timeAttackPlayer === true
+        && (this.playerSelected.position.col + 1 === this.arrayEnemiesGenerated[n].position.col  || this.playerSelected.position.col - 1 == this.arrayEnemiesGenerated[n].position.col)
+        && this.playerSelected.position.row == this.arrayEnemiesGenerated[n].position.row
+        && this.playerSelected.lifeBar > 0
+        && this.iaDecision === true) {
 
-            this.enemyAttackToPlayer(this.playerSelected);
+              this.enemyAttackToPlayer(this.playerSelected, this.arrayEnemiesGenerated[n] );
 
-      }
+        }
+      };
+
+
+
 
 
 
@@ -637,36 +675,45 @@ function Game(options) {
   };
 
   this.perspectivePlayer = function () {
-    if(this.checkEnemiesExist() && this.checkLivePlayer(this.player) && this.player.position.row <= this.enemy.position.row ) {
+    if(this.checkTwoPlayers() === false && this.checkEnemiesExist() && this.checkLivePlayer(this.player) && this.player.position.row <= this.enemy.position.row ) {
       $(this.player.name).css("z-index", "99");
-    } else {
-      $(this.player.name).css("z-index", "9");
+      //console.log("p", $(this.player.name).css("z-index"), "e", $(this.enemy.name).css("z-index") );
+      $(this.enemy.name).css("z-index", "9");
+
     }
 
-    if( this.checkTwoPlayers() === false && this.checkEnemiesExist() && this.checkLivePlayer(this.player) && this.enemy.position.row < this.player.position.row || this.checkTwoPlayers() && this.checkEnemiesExist() && this.checkLivePlayer(this.player2) && this.enemy.position.row < this.player2.position.row
+    if( this.checkTwoPlayers() === false && this.checkEnemiesExist() && this.checkLivePlayer(this.player) && this.enemy.position.row < this.player.position.row
+    || this.checkTwoPlayers() && this.checkEnemiesExist() && this.checkLivePlayer(this.player2) && this.enemy.position.row < this.player2.position.row
   || this.checkTwoPlayers() && this.checkEnemiesExist() && this.checkLivePlayer(this.player2) && this.enemy.position.row < this.player2.position.row && this.enemy.position.row < this.player.position.row  ) {
       $(this.enemy.name).css("z-index", "99");
-    } else {
-      $(this.enemy.name).css("z-index", "9");
+      $(this.player.name).css("z-index", "9");
+      $(this.player2.name).css("z-index", "9");
     }
 
 
     if(this.checkTwoPlayers() && this.checkEnemiesExist() && this.checkLivePlayer(this.player2) && this.player2.position.row <= this.enemy.position.row ) {
-      $(this.player2.name).css("z-index", "99");
-    } else {
-      if(this.checkTwoPlayers()) {
-        $(this.player2.name).css("z-index", "9");
-      }
+        $(this.player2.name).css("z-index", "99");
+        $(this.player.name).css("z-index", "9");
+        $(this.enemy.name).css("z-index", "9");
+
 
     }
-    if(this.checkTwoPlayers() && this.checkLivePlayer(this.player) && this.checkLivePlayer(this.player2) && this.player.position.row <= this.player2.position.row ) {
+    if(this.checkTwoPlayers() && this.checkLivePlayer(this.player) && this.checkLivePlayer(this.player2) && this.player.position.row <= this.player2.position.row && this.enemy.position.row >= this.player.position.row ) {
       $(this.player.name).css("z-index", "99");
-    } else {
-      $(this.player.name).css("z-index", "9");
+      $(this.player2.name).css("z-index", "10");
+      $(this.enemy.name).css("z-index", "9");
+
+    }
+    if(this.checkTwoPlayers() && this.checkLivePlayer(this.player) && this.checkLivePlayer(this.player) && this.player2.position.row <= this.player.position.row && this.enemy.position.row >= this.player2.position.row) {
+      $(this.player.name).css("z-index", "10");
+      $(this.player2.name).css("z-index", "99");
+      $(this.enemy.name).css("z-index", "9");
+
     }
   };
 
   this.loadGame = function () {
+    this.generateArrayEnemies(8);
     this.generateEnemies(0);
     this.gameIntervals();
     this.player.drawPlayer(1 , 4, 2);

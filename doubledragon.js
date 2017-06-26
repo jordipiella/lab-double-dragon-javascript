@@ -12,12 +12,12 @@ $(document).ready(function() {
         {
           name : "enemy11",
           sprite : "img/Abobo.png",
-          position: { row : 3, col : 38 }
+          position: { row : 3, col : 37 }
         },
         {
           name : "enemy12",
           sprite : "img/Abobo-w.png",
-          position: { row : 1, col : 38 }
+          position: { row : 1, col : 7 }
         }
       ]
     });
@@ -36,13 +36,13 @@ $(document).ready(function() {
         {
           name : "enemy11",
           sprite : "img/Abobo.png",
-          position: { row : 3, col : 38 }
+          position: { row : 3, col : 37 }
 
         },
         {
           name : "enemy12",
           sprite : "img/Abobo-w.png",
-          position: { row : 1, col : 3 }
+          position: { row : 1, col : 7 }
         }
       ]
     });

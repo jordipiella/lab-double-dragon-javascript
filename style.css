@@ -7,6 +7,12 @@ body {
   background-size: cover;
   background-position: top center;
 }
+.c-w {
+  color: #fff;
+}
+.img-res {
+  max-width: 800px;
+}
 .container {
 
   height: 500px;
@@ -113,14 +119,26 @@ body {
 .visible {
   display: block;
 }
+.controls p {
+ font-size: 22px;
+
+}
+.player1Controls, .player2Controls{
+  width: 50%;
+  float: left;
+}
 .intro {
-  background-image: url("img/intro.png");
+
   background-size: 800px ;
   background-repeat: no-repeat;
   background-position: center;
   background-color: #000;
   width: 100%;
   height: 100vh;
+}
+.containerIntro {
+  max-width: 1160px;
+  margin: 0 auto;
 }
 .start {
   width: 200px;

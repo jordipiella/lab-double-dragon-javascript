@@ -169,7 +169,6 @@ function Enemy(name, sprite, position) {
 
       }
       if(this.step % 2 == 1) {
-          //console.log(this.position.col);
 
         setTimeout(function(){
           $(self.name).css({ "background-position": "-315px -195px", "z-index" : "99" });

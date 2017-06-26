@@ -3,7 +3,6 @@ function Game(options) {
   this.player2 = options.player2;
   this.map = options.map;
   this.enemies = options.enemies;
-  //this.enemy = "";
   this.arrayEnemiesGenerated = [];
   this.iaDecision = true;
   this.timeAttack = true;
@@ -31,6 +30,94 @@ function Game(options) {
   };
   $(".container").css({ "background-position": "0px -470px" });
 //this.drawScene ();
+  this.checkPlayerVsEnemyPosition = function(playerToCheck, caseToCheck) {
+    var numberDirectionVertical = 0;
+    var numberDirectionHorizontal = 0;
+    switch (caseToCheck) {
+      case "up":
+        numberDirectionVertical = - 1;
+      break;
+      case "down":
+        numberDirectionVertical = + 1;
+      break;
+      case "left":
+        numberDirectionHorizontal = + 1;
+      break;
+      case "right":
+        numberDirectionHorizontal = - 1;
+      break;
+    }
+    var conditional = "";
+    for(n = 0; n < this.arrayEnemiesGenerated.length; n++){
+      if(playerToCheck.position.col === this.arrayEnemiesGenerated[n].position.col + numberDirectionHorizontal && playerToCheck.position.row === this.arrayEnemiesGenerated[n].position.row + numberDirectionVertical) {
+        if(conditional !== "" && n !== this.arrayEnemiesGenerated.length ) {
+          conditional += "||";
+        }
+
+        conditional += playerToCheck + ".position.col === this.arrayEnemiesGenerated["+ n +"].position.col +" + numberDirectionHorizontal + " && " + playerToCheck +".position.row === this.arrayEnemiesGenerated["+ n +"].position.row +"+ numberDirectionVertical;
+
+      }
+    }
+
+    return conditional;
+  };
+  this.checkEnemiesPositionNotNull = function () {
+    var conditional;
+    for(n = 0; n < this.arrayEnemiesGenerated.length; n++){
+
+      if(this.arrayEnemiesGenerated[n].position !== null) {
+
+        if(conditional !== "" && n !== this.arrayEnemiesGenerated.length ) {
+          conditional += "||";
+        }
+        conditional += "this.arrayEnemiesGenerated[" + n + "].position !== null";
+      }
+
+    }
+
+    return conditional;
+  };
+  this.checkIfSameRow = function (playerToCheck) {
+    var conditional;
+    for(n = 0; n < this.arrayEnemiesGenerated.length; n++){
+
+      if(playerToCheck.position.row === this.arrayEnemiesGenerated[n].position.row) {
+
+        if(conditional !== "" && n !== this.arrayEnemiesGenerated.length ) {
+          conditional += "||";
+        }
+        conditional += playerToCheck+ ".position.row === this.arrayEnemiesGenerated["+ n +"].position.row";
+      }
+
+    }
+
+    return conditional;
+  };
+
+  this.checkIfCorrectColToAttack = function (playerToCheck) {
+    var conditional;
+    for(n = 0; n < this.arrayEnemiesGenerated.length; n++){
+
+      if(playerToCheck.position.col === this.arrayEnemiesGenerated[n].position.col + 1 || playerToCheck.position.col === this.arrayEnemiesGenerated[n].position.col - 1) {
+
+        if(conditional !== "" && n !== this.arrayEnemiesGenerated.length ) {
+          conditional += "||";
+        }
+        conditional += playerToCheck + ".position.col === this.arrayEnemiesGenerated[" + n + "].position.col + 1 || "+ playerToCheck +".position.col === this.arrayEnemiesGenerated[" + n + "].position.col - 1";
+      }
+
+    }
+    console.log(conditional);
+    return conditional;
+  };
+  this.enemyInFrontPlayer = function (playerToCheck) {
+    for(n = 0; n < this.arrayEnemiesGenerated.length; n++){
+        if(playerToCheck.position.col === this.arrayEnemiesGenerated[n].position.col + 1 || playerToCheck.position.col === this.arrayEnemiesGenerated[n].position.col - 1){
+          return this.arrayEnemiesGenerated[n];
+        }
+    }
+  };
+
   this.assignControlsToKeys = function(){
     if(this.checkTwoPlayers()){
       this.keyEvent= 'keyup';
@@ -42,10 +129,8 @@ function Game(options) {
         case 87: // arrow up
             if(this.checkEnemiesExist()
             && this.checkLivePlayer(this.player)
-            && this.enemy.position !== null
-            && (this.player.position.col === this.enemy.position.col
-                && this.player.position.row === this.enemy.position.row - 1)) {
-                //console.log(this.player.position, this.enemy.position);
+            && this.checkEnemiesPositionNotNull()
+            && this.checkPlayerVsEnemyPosition(this.player, "up")) {
             } else {
                   if(this.timeAttack === true && this.player.timeAttackPlayer === true){
                     this.player.moveUp();
@@ -59,10 +144,8 @@ function Game(options) {
 
           if(this.checkEnemiesExist()
           && this.checkLivePlayer(this.player)
-          && this.enemy.position !== null
-          && (this.player.position.col === this.enemy.position.col
-              && this.player.position.row === this.enemy.position.row + 1)) {
-            //console.log(this.player.position, this.enemy.position);
+          && this.checkEnemiesPositionNotNull()
+          && this.checkPlayerVsEnemyPosition(this.player, "down")) {
 
           } else {
 
@@ -74,10 +157,8 @@ function Game(options) {
         case 65: // arrow left
 
           if(this.checkEnemiesExist() && this.checkLivePlayer(this.player)
-          && this.enemy.position !== null
-          && (this.player.position.col === this.enemy.position.col + 1
-            && this.player.position.row === this.enemy.position.row)) {
-            //console.log(this.player.position, this.enemy.position);
+          && this.checkEnemiesPositionNotNull()
+          && this.checkPlayerVsEnemyPosition(this.player, "left")) {
 
           } else {
 
@@ -90,10 +171,8 @@ function Game(options) {
 
           if(this.checkEnemiesExist()
           && this.checkLivePlayer(this.player)
-          && this.enemy.position !== null
-          && (this.player.position.col === this.enemy.position.col - 1
-            && this.player.position.row === this.enemy.position.row)) {
-              //console.log(this.player.position, this.enemy.position);
+          && this.checkEnemiesPositionNotNull()
+          && this.checkPlayerVsEnemyPosition(this.player, "right")) {
 
           } else {
 
@@ -104,25 +183,25 @@ function Game(options) {
           break;
         case 67: //c
 
-
+          var self = this;
           if(this.checkEnemiesExist()
           && this.checkLivePlayer(this.player)
-          && this.enemy.position !== null
+          && this.checkEnemiesPositionNotNull()
           && this.timeAttack === true
           && this.player.timeAttackPlayer === true
-          && (this.player.position.col === this.enemy.position.col + 1 || this.player.position.col === this.enemy.position.col - 1
-            && this.player.position.row === this.enemy.position.row
+          && (this.checkIfCorrectColToAttack(this.player)
+            && this.checkIfSameRow(this.player)
             && this.timeAttack === true
             && this.player.lifeBar !== 0)) {
 
-              this.playerAttackToEnemy(this.player);
+              this.playerAttackToEnemy(this.player, this.enemyInFrontPlayer(this.player));
 
             } else {
               if( this.timeAttack === true && this.player.timeAttackPlayer === true) {
                 this.player.timeAttackPlayer = false;
 
                 this.player.attackPlayer();
-                var self = this;
+                self = this;
                 setTimeout(function(){
                   self.player.timeAttackPlayer = true;
 
@@ -133,10 +212,8 @@ function Game(options) {
           break;
         case 74: //j left
         if(this.checkTwoPlayers() && this.checkEnemiesExist() && this.checkLivePlayer(this.player2)
-        && this.enemy.position !== null
-        && (this.player2.position.col === this.enemy.position.col + 1
-          && this.player2.position.row === this.enemy.position.row)) {
-          //console.log(this.player.position, this.enemy.position);
+        && this.checkEnemiesPositionNotNull()
+        && this.checkPlayerVsEnemyPosition(this.player2, "left")) {
 
         } else {
 
@@ -148,10 +225,8 @@ function Game(options) {
         case 75: //k down
         if(this.checkTwoPlayers() && this.checkEnemiesExist()
         && this.checkLivePlayer(this.player2)
-        && this.enemy.position !== null
-        && (this.player2.position.col === this.enemy.position.col
-            && this.player2.position.row === this.enemy.position.row + 1)) {
-          //console.log(this.player.position, this.enemy.position);
+        && this.checkEnemiesPositionNotNull()
+        && this.checkPlayerVsEnemyPosition(this.player2, "down")) {
 
         } else {
 
@@ -163,10 +238,8 @@ function Game(options) {
         case 76: //l right
         if(this.checkTwoPlayers() && this.checkEnemiesExist()
         && this.checkLivePlayer(this.player2)
-        && this.enemy.position !== null
-        && (this.player2.position.col === this.enemy.position.col - 1
-          && this.player2.position.row === this.enemy.position.row)) {
-            //console.log(this.player.position, this.enemy.position);
+        && this.checkEnemiesPositionNotNull()
+        && this.checkPlayerVsEnemyPosition(this.player2, "right")) {
 
         } else {
 
@@ -178,10 +251,8 @@ function Game(options) {
         case 73: //i up
         if(this.checkTwoPlayers() && this.checkEnemiesExist()
         && this.checkLivePlayer(this.player2)
-        && this.enemy.position !== null
-        && (this.player2.position.col === this.enemy.position.col
-            && this.player2.position.row === this.enemy.position.row - 1)) {
-            //console.log(this.player.position, this.enemy.position);
+        && this.checkEnemiesPositionNotNull()
+        && this.checkPlayerVsEnemyPosition(this.player2, "up")) {
         } else {
               if(this.checkTwoPlayers() && this.timeAttack === true && this.player2.timeAttackPlayer === true){
                 this.player2.moveUp();
@@ -192,15 +263,15 @@ function Game(options) {
         case 189: //- ctrl attack 17
         if(this.checkTwoPlayers() && this.checkEnemiesExist()
         && this.checkLivePlayer(this.player2)
-        && this.enemy.position !== null
+        && this.checkEnemiesPositionNotNull()
         && this.timeAttack === true
         && this.player2.timeAttackPlayer === true
-        && (this.player2.position.col === this.enemy.position.col + 1 || this.player2.position.col === this.enemy.position.col - 1
-          && this.player2.position.row === this.enemy.position.row
+        && (this.checkIfCorrectColToAttack(this.player2)
+          && this.checkIfSameRow(this.player2)
           && this.timeAttack === true
-          && this.player.lifeBar !== 0)) {
+          && this.player2.lifeBar !== 0)) {
 
-            this.playerAttackToEnemy(this.player2);
+            this.playerAttackToEnemy(this.player2, this.enemyInFrontPlayer(this.player2));
 
           } else {
             if(this.checkTwoPlayers() && this.timeAttack === true && this.player2.timeAttackPlayer === true) {
@@ -240,14 +311,22 @@ function Game(options) {
 
 
 
-  this.generateEnemies = function (timeToWait) {
+  this.generateEnemies = function (timeToWait, numberOne, numberTwo) {
 
     var self = this;
     setTimeout(function () {
-      self.arrayEnemiesGenerated[0].drawEnemy();
-      self.arrayEnemiesGenerated[1].drawEnemy();
-      actionIa = setInterval(function(){
-      self.iaEnemy();
+      self.arrayEnemiesGenerated[numberOne].drawEnemy();
+      if(self.checkTwoPlayers()){
+
+        self.arrayEnemiesGenerated[numberTwo].drawEnemy();
+
+      }
+
+      actionIa1 = setInterval(function(){
+      self.iaEnemy(1);
+      }, 700);
+      actionIa2 = setInterval(function(){
+      self.iaEnemy(2);
       }, 700);
 
     }, timeToWait);
@@ -293,7 +372,7 @@ function Game(options) {
           }
 
           $(".container").css({ "background-position": "-500px -470px" });
-          self.generateEnemies(3000);
+          self.generateEnemies(3000, 0, 1);
 
 
       }
@@ -303,7 +382,7 @@ function Game(options) {
           $(self.player2.name).animate(animationPlayer2, 950);
         }
         $(".container").css({ "background-position": "-1000px -470px" });
-        this.generateEnemies(3000);
+        this.generateEnemies(3000, 0, 1);
       }
       if (this.stepMap === 2 ) {
         $(self.player.name).animate(animationPlayer, 950);
@@ -311,7 +390,7 @@ function Game(options) {
           $(self.player2.name).animate(animationPlayer2, 950);
         }
         $(".container").css({ "background-position": "-1500px -470px" });
-        this.generateEnemies(3000);
+        this.generateEnemies(3000, 0, 1);
       }
       if (this.stepMap === 3 ) {
         $(self.player.name).animate(animationPlayer, 950);
@@ -319,7 +398,7 @@ function Game(options) {
           $(self.player2.name).animate(animationPlayer2, 950);
         }
         $(".container").css({ "background-position": "-2000px -470px" });
-        this.generateEnemies();
+        this.generateEnemies(3000, 0, 1);
       }
       if (this.stepMap === 4  ) {
         $(self.player.name).animate(animationPlayer, 950);
@@ -327,7 +406,7 @@ function Game(options) {
           $(self.player2.name).animate(animationPlayer2, 950);
         }
         $(".container").css({ "background-position": "-2500px -470px" });
-        this.generateEnemies(3000);
+        this.generateEnemies(3000, 0, 1);
         clearInterval(this.baseInterval);
       }
 
@@ -370,11 +449,22 @@ function Game(options) {
     }
 
     }, 100);
-    this.removePlayer = function (nameEnemyOrPlayer) {
-      $(nameEnemyOrPlayer).remove();
 
-    };
 
+  };
+  this.removePlayer = function (nameEnemyOrPlayer) {
+    $(nameEnemyOrPlayer).remove();
+
+  };
+  this.removeAllEnemies = function() {
+    for(n = 0; n < this.arrayEnemiesGenerated.length; n++){
+      $(this.arrayEnemiesGenerated[n].name).remove();
+    }
+  };
+  this.allEnemiesNull = function() {
+    for(n = 0; n < this.arrayEnemiesGenerated.length; n++){
+      this.arrayEnemiesGenerated[n].name = null;
+    }
   };
 
 
@@ -386,15 +476,17 @@ function Game(options) {
       $(".gameOver").animate({opacity: 1}, 2000);
       $(".topScene div").remove();
       $(".cell.board").remove();
-      clearInterval(actionIa);
+      clearInterval(actionIa1);
+      clearInterval(actionIa2);
       clearInterval(this.baseInterval);
-      this.removePlayer(this.enemy.name);
+      //this.removePlayer(this.enemy.name);
+      this.removeAllEnemies();
       this.removePlayer(this.player.name);
       if(this.checkTwoPlayers()) {
         this.removePlayer(this.player2.name);
       }
-
-      this.enemy = null;
+      this.allEnemiesNull();
+      //this.enemy = null;
       this.map = null;
       this.player = null;
       this.player2 = null;
@@ -425,14 +517,22 @@ function Game(options) {
 
       }, 700);
 
-      if(enemykicked.lifeBar === 0) {
+      if(enemykicked.lifeBar <= 0) {
         setTimeout(function(){
           playerToAttack.timeAttackPlayer = false;
 
         }, 700);
+        console.log(enemykicked.name);
+        if(enemykicked.name === ".enemy11") {
+          clearInterval(actionIa1);
+        }
+        if(enemykicked.name === ".enemy12") {
+          clearInterval(actionIa2);
+        }
 
-        clearInterval(actionIa);
         enemykicked.deadPlayer();
+        enemykicked.lifeBar = 6;
+
 
 
         setTimeout(function(){
@@ -541,7 +641,7 @@ function Game(options) {
     //console.log(randomNumber);
   };
 
-  this.iaEnemy = function () {
+  this.iaEnemy = function (n) {
 
       for(n = 0; n< this.arrayEnemiesGenerated.length; n++){
         if(this.checkEnemiesExist()) {
@@ -563,24 +663,20 @@ function Game(options) {
           (this.playerSelected.position.col + 1 !== this.arrayEnemiesGenerated[n].position.col
             && this.playerSelected.position.col < this.arrayEnemiesGenerated[n].position.col)) {
             this.arrayEnemiesGenerated[n].moveForward();
-            //console.log(this.player.position, this.enemy.position);
         }
         if(this.checkEnemiesExist() &&
         (this.playerSelected.position.col - 1 !== this.arrayEnemiesGenerated[n].position.col
           && this.playerSelected.position.col > this.arrayEnemiesGenerated[n].position.col)) {
             this.arrayEnemiesGenerated[n].moveBack();
-            //console.log(this.player.position, this.enemy.position);
         }
         if(this.checkEnemiesExist() &&
           (this.playerSelected.position.row !== this.arrayEnemiesGenerated[n].position.row && this.playerSelected.position.row > this.arrayEnemiesGenerated[n].position.row)) {
             this.arrayEnemiesGenerated[n].moveUp();
 
-            //console.log(this.player.position, this.enemy.position);
         }
         if(this.checkEnemiesExist() &&
         (this.playerSelected.position.row !== this.arrayEnemiesGenerated[n].position.row && this.playerSelected.position.row < this.arrayEnemiesGenerated[n].position.row)) {
             this.arrayEnemiesGenerated[n].moveDown();
-            //console.log(this.player.position, this.enemy.position);
         }
 
         if(this.checkEnemiesExist()
@@ -677,17 +773,19 @@ function Game(options) {
   this.perspectivePlayer = function () {
     if(this.checkTwoPlayers() === false && this.checkEnemiesExist() && this.checkLivePlayer(this.player) && this.player.position.row <= this.enemy.position.row ) {
       $(this.player.name).css("z-index", "99");
-      //console.log("p", $(this.player.name).css("z-index"), "e", $(this.enemy.name).css("z-index") );
       $(this.enemy.name).css("z-index", "9");
 
     }
 
     if( this.checkTwoPlayers() === false && this.checkEnemiesExist() && this.checkLivePlayer(this.player) && this.enemy.position.row < this.player.position.row
     || this.checkTwoPlayers() && this.checkEnemiesExist() && this.checkLivePlayer(this.player2) && this.enemy.position.row < this.player2.position.row
-  || this.checkTwoPlayers() && this.checkEnemiesExist() && this.checkLivePlayer(this.player2) && this.enemy.position.row < this.player2.position.row && this.enemy.position.row < this.player.position.row  ) {
+    || this.checkTwoPlayers() && this.checkEnemiesExist() && this.checkLivePlayer(this.player2) && this.enemy.position.row < this.player2.position.row && this.enemy.position.row < this.player.position.row  ) {
       $(this.enemy.name).css("z-index", "99");
       $(this.player.name).css("z-index", "9");
-      $(this.player2.name).css("z-index", "9");
+      if(this.checkTwoPlayers()){
+        $(this.player2.name).css("z-index", "9");
+      }
+
     }
 
 
@@ -713,8 +811,13 @@ function Game(options) {
   };
 
   this.loadGame = function () {
-    this.generateArrayEnemies(8);
-    this.generateEnemies(0);
+    if(this.checkTwoPlayers()) {
+      this.generateArrayEnemies(2);
+    } else {
+      this.generateArrayEnemies(1);
+    }
+
+    this.generateEnemies(0, 0, 1);
     this.gameIntervals();
     this.player.drawPlayer(1 , 4, 2);
     this.liveBarDraw();
